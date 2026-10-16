@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOC Redes EAFIT — Monitoreo de Infraestructura (Mockup Sprint 1)</title>
+<style>
+  :root{--az:#0b3c5d;--az2:#1d6fa5;--ok:#1a9850;--warn:#f0a202;--bad:#d7263d;--bg:#f4f6f9;--card:#fff;--line:#e2e8f0;--tx:#1f2d3d;}
+  *{box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--tx);}
+  header{background:linear-gradient(90deg,var(--az),var(--az2));color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  header h1{font-size:18px;margin:0;font-weight:600;}
+  header .sub{font-size:12px;opacity:.85;}
+  nav{display:flex;gap:4px;background:var(--card);padding:0 22px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap;}
+  nav button{background:none;border:none;padding:14px 16px;font-size:14px;cursor:pointer;color:#5a6b7b;border-bottom:3px solid transparent;}
+  nav button.active{color:var(--az2);border-bottom-color:var(--az2);font-weight:600;}
+  main{padding:22px;max-width:1100px;margin:0 auto;}
+  .view{display:none;} .view.active{display:block;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .card .k{font-size:12px;color:#78889a;text-transform:uppercase;letter-spacing:.5px;}
+  .card .v{font-size:26px;font-weight:700;margin-top:6px;}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .toolbar label{font-size:13px;color:#5a6b7b;}
+  select,button.act{padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:13px;cursor:pointer;}
+  button.act{background:var(--az2);color:#fff;border-color:var(--az2);}
+  button.act.sec{background:#fff;color:var(--az2);}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  th,td{text-align:left;padding:11px 13px;font-size:13px;border-bottom:1px solid var(--line);}
+  th{background:#eef2f7;color:#5a6b7b;text-transform:uppercase;font-size:11px;letter-spacing:.4px;}
+  tr:last-child td{border-bottom:none;}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+  .up{background:#e4f5ea;color:var(--ok);} .down{background:#fde7ea;color:var(--bad);} .deg{background:#fdf3dd;color:#9a6a00;}
+  .dot{height:9px;width:9px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .alert{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .alert .t{font-size:12px;color:#8a97a6;}
+  .muted{color:#8a97a6;font-size:12px;} h2{font-size:16px;margin:0 0 12px;}
+  .foot{max-width:1100px;margin:10px auto;padding:0 22px 30px;color:#8a97a6;font-size:12px;}
+  .legend{font-size:12px;color:#8a97a6;margin-top:8px;}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>NOC Redes — Universidad EAFIT</h1><div class="sub">Plataforma de Monitoreo y Automatización de Infraestructura · Mockup funcional Sprint 1</div></div>
+  <div class="sub">Área: Infraestructura TI – Redes</div>
+</header>
+<nav>
+  <button data-v="mon" class="active">📡 Monitoreo (HU-01)</button>
+  <button data-v="ale">🔔 Alertas (HU-02)</button>
+  <button data-v="rep">📊 Reportes (HU-03)</button>
+</nav>
+<main>
+  <!-- HU-01 Monitoreo -->
+  <section id="mon" class="view active">
+    <div class="cards">
+      <div class="card"><div class="k">Equipos monitoreados</div><div class="v" id="m-total">0</div></div>
+      <div class="card"><div class="k">En línea</div><div class="v" style="color:var(--ok)" id="m-up">0</div></div>
+      <div class="card"><div class="k">Caídos</div><div class="v" style="color:var(--bad)" id="m-down">0</div></div>
+      <div class="card"><div class="k">Disponibilidad</div><div class="v" id="m-avail">0%</div></div>
+    </div>
+    <div class="toolbar">
+      <label>Intervalo de sondeo:</label>
+      <select id="interval">
+        <option value="5">cada 5 s (demo)</option>
+        <option value="10">cada 10 s</option>
+        <option value="30">cada 30 s</option>
+        <option value="300">cada 5 min (real)</option>
+      </select>
+      <button class="act" id="refreshNow">Sondear ahora</button>
+      <span class="muted" id="lastPoll"></span>
+    </div>
+    <table>
+      <thead><tr><th>Equipo</th><th>Tipo</th><th>Ubicación</th><th>IP</th><th>Estado</th><th>Últ. respuesta</th></tr></thead>
+      <tbody id="devBody"></tbody>
+    </table>
+    <div class="legend">HU-01: sondeo automático en intervalo configurable · alerta ante no-respuesta · historial de estado por equipo.</div>
+  </section>
+
+  <!-- HU-02 Alertas -->
+  <section id="ale" class="view">
+    <h2>Alertas de incidentes</h2>
+    <div class="toolbar">
+      <span class="muted">Se generan automáticamente cuando un equipo deja de responder (&lt; 1 min). Incluyen equipo, ubicación y hora.</span>
+      <button class="act sec" id="clearAck">Marcar todas como vistas</button>
+    </div>
+    <div id="alertList"></div>
+  </section>
+
+  <!-- HU-03 Reportes -->
+  <section id="rep" class="view">
+    <h2>Reporte de desempeño de red</h2>
+    <div class="toolbar">
+      <label>Período:</label>
+      <select id="period"><option>Hoy</option><option>Últimos 7 días</option><option>Últimos 30 días</option></select>
+      <button class="act" id="genReport">Generar reporte</button>
+      <button class="act sec" id="exportCsv">Exportar CSV</button>
+      <button class="act sec" id="printRep">Imprimir / PDF</button>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="k">Disponibilidad promedio</div><div class="v" id="r-avail">—</div></div>
+      <div class="card"><div class="k">Incidentes del período</div><div class="v" id="r-inc">—</div></div>
+      <div class="card"><div class="k">Tiempo medio de resolución</div><div class="v" id="r-mttr">—</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Equipo</th><th>Disponibilidad</th><th>Incidentes</th><th>Tiempo atención (prom.)</th></tr></thead>
+      <tbody id="repBody"></tbody>
+    </table>
+    <div class="legend">HU-03: reporte programado con disponibilidad, incidentes y tiempos; exportable a CSV/PDF.</div>
+  </section>
+</main>
+<div class="foot">Mockup funcional con datos simulados · Entrega 2 — Sistemas de Información EAFIT · Historias de usuario del Sprint 1 (HU-01 monitoreo, HU-02 alertas, HU-03 reportes).</div>
+
+<script>
+const devices=[
+ {n:"SW-Core-01",t:"Switch",u:"Bloque 19 - Datacenter",ip:"10.1.0.1"},
+ {n:"SW-Dist-Bloque38",t:"Switch",u:"Bloque 38",ip:"10.1.2.4"},
+ {n:"AP-Biblioteca-3",t:"Access Point",u:"Biblioteca piso 3",ip:"10.2.5.33"},
+ {n:"AP-Aula-25-204",t:"Access Point",u:"Bloque 25 - Aula 204",ip:"10.2.7.12"},
+ {n:"SW-Acceso-Bloque33",t:"Switch",u:"Bloque 33",ip:"10.1.3.9"},
+ {n:"AP-Cafeteria",t:"Access Point",u:"Cafetería central",ip:"10.2.9.5"},
+ {n:"AP-Auditorio",t:"Access Point",u:"Auditorio Fundadores",ip:"10.2.4.21"},
+ {n:"SW-Dist-Deportes",t:"Switch",u:"Centro deportivo",ip:"10.1.4.2"},
+];
+let state={}, alerts=[], timer=null, polls=0;
+devices.forEach(d=>state[d.n]={status:"up",last:new Date(),history:[]});
+function fmt(dt){return dt.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function poll(){
+  polls++;
+  devices.forEach(d=>{
+    const r=Math.random();
+    let s = r<0.08 ? "down" : (r<0.16 ? "deg":"up");
+    const prev=state[d.n].status;
+    state[d.n].status=s;
+    if(s!=="down") state[d.n].last=new Date();
+    state[d.n].history.push(s);
+    if(s==="down" && prev!=="down"){
+      alerts.unshift({dev:d.n,u:d.u,ip:d.ip,t:new Date(),ack:false});
+    }
+  });
+  renderMon(); renderAlerts();
+  document.getElementById('lastPoll').textContent="Último sondeo: "+fmt(new Date())+" (#"+polls+")";
+}
+function renderMon(){
+  const b=document.getElementById('devBody');b.innerHTML="";
+  let up=0,down=0;
+  devices.forEach(d=>{
+    const s=state[d.n].status; if(s==="up")up++; if(s==="down")down++;
+    const pill=s==="up"?'<span class="pill up">● En línea</span>':s==="down"?'<span class="pill down">● Caído</span>':'<span class="pill deg">● Degradado</span>';
+    b.innerHTML+=`<tr><td><b>${d.n}</b></td><td>${d.t}</td><td>${d.u}</td><td>${d.ip}</td><td>${pill}</td><td>${fmt(state[d.n].last)}</td></tr>`;
+  });
+  document.getElementById('m-total').textContent=devices.length;
+  document.getElementById('m-up').textContent=up;
+  document.getElementById('m-down').textContent=down;
+  document.getElementById('m-avail').textContent=Math.round(up/devices.length*100)+"%";
+}
+function renderAlerts(){
+  const l=document.getElementById('alertList');
+  if(!alerts.length){l.innerHTML='<p class="muted">Sin alertas activas. Todo opera con normalidad.</p>';return;}
+  l.innerHTML=alerts.slice(0,20).map(a=>`<div class="alert" style="border-left-color:${a.ack?'#b9c2cc':'var(--bad)'}">
+    <div style="font-size:20px">${a.ack?'✓':'🔴'}</div>
+    <div><b>Caída detectada — ${a.dev}</b><br>
+    <span class="muted">${a.u} · ${a.ip}</span><br>
+    <span class="t">Detectada: ${a.t.toLocaleString('es-CO')}</span></div></div>`).join("");
+}
+function genReport(){
+  const rows=devices.map(d=>{
+    const h=state[d.n].history; const tot=h.length||1;
+    const av=Math.round(h.filter(x=>x==="up").length/tot*100);
+    const inc=alerts.filter(a=>a.dev===d.n).length;
+    const mttr=inc?(Math.round(5+Math.random()*25)):0;
+    return {n:d.n,av:isFinite(av)?av:100,inc,mttr};
+  });
+  const body=document.getElementById('repBody');
+  body.innerHTML=rows.map(r=>`<tr><td><b>${r.n}</b></td><td>${r.av}%</td><td>${r.inc}</td><td>${r.mttr?r.mttr+' min':'—'}</td></tr>`).join("");
+  const avg=Math.round(rows.reduce((s,r)=>s+r.av,0)/rows.length);
+  const inc=rows.reduce((s,r)=>s+r.inc,0);
+  const mttrs=rows.filter(r=>r.mttr); const mttr=mttrs.length?Math.round(mttrs.reduce((s,r)=>s+r.mttr,0)/mttrs.length):0;
+  document.getElementById('r-avail').textContent=avg+"%";
+  document.getElementById('r-inc').textContent=inc;
+  document.getElementById('r-mttr').textContent=mttr?mttr+" min":"—";
+  window._rep=rows;
+}
+function exportCsv(){
+  if(!window._rep){genReport();}
+  let csv="Equipo,Disponibilidad(%),Incidentes,TiempoAtencion(min)\n"+window._rep.map(r=>`${r.n},${r.av},${r.inc},${r.mttr}`).join("\n");
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download="reporte_red_eafit.csv";a.click();
+}
+document.querySelectorAll('nav button').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');document.getElementById(btn.dataset.v).classList.add('active');
+});
+document.getElementById('refreshNow').onclick=poll;
+document.getElementById('clearAck').onclick=()=>{alerts.forEach(a=>a.ack=true);renderAlerts();};
+document.getElementById('genReport').onclick=genReport;
+document.getElementById('exportCsv').onclick=exportCsv;
+document.getElementById('printRep').onclick=()=>window.print();
+function restart(){if(timer)clearInterval(timer);timer=setInterval(poll,parseInt(document.getElementById('interval').value)*1000);}
+document.getElementById('interval').onchange=restart;
+poll();restart();
+</script>
+</body>
+</html>
