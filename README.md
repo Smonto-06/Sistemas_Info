@@ -1,36 +1,64 @@
-# Sistemas de Información — Entrega 2 · Universidad EAFIT
+# NOC Redes — Universidad EAFIT
 
-Proyecto del curso **Sistemas de Información** (EAFIT). Empresa analizada: **Universidad EAFIT**, área **Infraestructura TI – Redes**.
+Proyecto del curso **Sistemas de Información** (Universidad EAFIT, 2026-2).
+Empresa analizada: **Universidad EAFIT** · Área intervenida: **Infraestructura TI – Redes**.
 
-Este repositorio contiene el **mockup funcional** del Sprint 1 y los **documentos de la Entrega 2**.
+**Plataforma de Monitoreo y Automatización de Infraestructura de Red** — prototipo funcional
+que implementa las 7 historias de usuario del backlog sobre datos simulados.
 
-## 🖥️ Mockup funcional (Sprint 1)
+### 🔗 Ver en vivo
+**https://smonto-06.github.io/Sistemas_Info/**
 
-Plataforma de **Monitoreo y Automatización de Infraestructura de Red**. El `index.html` es una maqueta funcional (datos simulados) que implementa las 3 historias de usuario del Sprint 1:
+---
 
-| HU | Vista | Qué demuestra |
-|----|-------|---------------|
-| **HU-01** | 📡 Monitoreo | Sondeo automático del estado de switches/AP en intervalo configurable, con historial y disponibilidad en vivo. |
-| **HU-02** | 🔔 Alertas | Generación automática de alertas cuando un equipo deja de responder (equipo, ubicación, hora). |
-| **HU-03** | 📊 Reportes | Reporte de desempeño (disponibilidad, incidentes, tiempos) exportable a CSV/PDF. |
+## Historias de usuario implementadas
 
-### Ver el mockup
-- **En vivo (GitHub Pages):** https://smonto-06.github.io/Sistemas_Info/
-- **Local:** abre `index.html` en el navegador.
+| HU | Vista | Qué demuestra | Proceso / brecha |
+|---|---|---|---|
+| **HU-01** | Monitoreo | Sondeo automático de switches y puntos de acceso en intervalo configurable, con latencia, estado e histórico. | P01 · 60 h/mes |
+| **HU-02** | Alertas | Alerta automática ante no-respuesta en menos de un minuto, con equipo, ubicación y hora. Escalable a incidente. | P01 |
+| **HU-03** | Reportes | Reporte de desempeño por período (hoy / 7 / 30 días) con disponibilidad, incidentes y tiempos. Exportable a CSV y PDF. | P02 · 40 h/mes |
+| **HU-04** | Incidentes | Registro con identificador, responsable, prioridad y **reloj de SLA** que avisa antes de incumplir. | P03 · 28 h/mes · brecha **D09** |
+| **HU-05** | Inventario | Inventario con **control de calidad del dato**: detecta series faltantes, series duplicadas, firmware no reportado y garantías vencidas. | P04 · 20 h/mes · brecha **D12** |
+| **HU-06** | Logs | Cuatro fuentes consolidadas en un flujo único y **agrupación automática en patrones** para reducir ruido. | P05 · 30 h/mes |
+| **HU-07** | Ocupación | Ocupación estimada por aula con sensores ESP32, distinguiendo **aula vacía** de **sensor caído**. | P08 · 45 h/mes |
 
-## 🗂️ Backlog del producto
-Gestionado en GitHub Projects: https://github.com/users/Smonto-06/projects/4
-Issues (7 historias de usuario): ver la pestaña *Issues* de este repo o del repo de backlog.
+## Características técnicas
 
-## 📐 Arquitectura
-Arquitectura por capas (presentación → lógica/automatización → integración → datos). Diagrama en `docs/arquitectura_capas_EAFIT.png`.
+- **Una sola página, sin dependencias externas.** No usa CDN ni librerías: funciona sin conexión.
+- **Gráficos en SVG** generados en el cliente (línea, barras y columnas).
+- **Datos simulados deterministas** mediante generador con semilla, de modo que las cifras son
+  estables entre recargas y reproducibles en una demostración.
+- **Simulación en vivo**: el sondeo, el flujo de logs y la ocupación se actualizan solos.
+- Exportación a **CSV** en incidentes, reportes e inventario · impresión a PDF del reporte.
+- Responsive y con hoja de estilo de impresión.
 
-## 📄 Documentos de la Entrega 2 (carpeta `docs/`)
-- `Entrega2_EAFIT.docx` — informe completo.
-- `Diagnostico_Madurez_Fase2_D01.xlsx` — diagnóstico de madurez (7 dimensiones, 36 indicadores).
-- `Automatizacion_Procesos_v3.xlsx` — priorización de automatización y recomendación tecnológica.
-- `AS_IS_redes_EAFIT.png` — diagrama del proceso actual (AS IS).
-- `arquitectura_capas_EAFIT.png` — arquitectura por capas (To Be).
+## Datos
 
-## Sprint 1 — Estado
-HU-01, HU-02 y HU-03: **implementadas en el mockup** y marcadas como *Done* en el tablero.
+Todos los datos son **simulados**. El prototipo no se conecta a la infraestructura real de la
+Universidad ni usa información operativa: se trata de un ambiente de demostración académica,
+conforme a la restricción de no utilizar datos reales sin autorización.
+
+## Despliegue
+
+Publicado como sitio estático en **GitHub Pages** desde la rama `main`.
+Para ejecutarlo localmente basta con abrir `index.html` en un navegador.
+
+## Backlog
+
+GitHub Projects — https://github.com/users/Smonto-06/projects/4
+
+## Documentos (`docs/`)
+
+| Archivo | Contenido |
+|---|---|
+| `Entrega2_EAFIT.docx` | Informe de la Entrega 2 |
+| `Diagnostico_Madurez_Fase2_D01.xlsx` | Diagnóstico de madurez digital — 7 dimensiones, 36 indicadores |
+| `Automatizacion_Procesos_v3.xlsx` | Priorización de procesos y recomendación tecnológica |
+| `AS_IS_redes_EAFIT.png` | Proceso actual (AS IS) |
+| `arquitectura_capas_EAFIT.png` | Arquitectura por capas |
+
+---
+
+Universidad EAFIT · Escuela de Ciencias Aplicadas e Ingeniería
+Curso Sistemas de Información · Profesor Juan Carlos Quintero Vallejo

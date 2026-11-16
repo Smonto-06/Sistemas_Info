@@ -2,203 +2,870 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOC Redes EAFIT — Monitoreo de Infraestructura (Mockup Sprint 1)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOC Redes · Universidad EAFIT — Plataforma de Monitoreo y Automatización</title>
+<meta name="description" content="Plataforma de monitoreo y automatización de la infraestructura de red — Infraestructura TI, Universidad EAFIT.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b3c5d'/><path d='M8 20h3v-6H8zm6.5 0h3V9h-3zm6.5 0h3v-9h-3z' fill='%234fc3f7'/></svg>">
 <style>
-  :root{--az:#0b3c5d;--az2:#1d6fa5;--ok:#1a9850;--warn:#f0a202;--bad:#d7263d;--bg:#f4f6f9;--card:#fff;--line:#e2e8f0;--tx:#1f2d3d;}
-  *{box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
-  body{margin:0;background:var(--bg);color:var(--tx);}
-  header{background:linear-gradient(90deg,var(--az),var(--az2));color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-  header h1{font-size:18px;margin:0;font-weight:600;}
-  header .sub{font-size:12px;opacity:.85;}
-  nav{display:flex;gap:4px;background:var(--card);padding:0 22px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap;}
-  nav button{background:none;border:none;padding:14px 16px;font-size:14px;cursor:pointer;color:#5a6b7b;border-bottom:3px solid transparent;}
-  nav button.active{color:var(--az2);border-bottom-color:var(--az2);font-weight:600;}
-  main{padding:22px;max-width:1100px;margin:0 auto;}
-  .view{display:none;} .view.active{display:block;}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:18px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
-  .card .k{font-size:12px;color:#78889a;text-transform:uppercase;letter-spacing:.5px;}
-  .card .v{font-size:26px;font-weight:700;margin-top:6px;}
-  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
-  .toolbar label{font-size:13px;color:#5a6b7b;}
-  select,button.act{padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:13px;cursor:pointer;}
-  button.act{background:var(--az2);color:#fff;border-color:var(--az2);}
-  button.act.sec{background:#fff;color:var(--az2);}
-  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  th,td{text-align:left;padding:11px 13px;font-size:13px;border-bottom:1px solid var(--line);}
-  th{background:#eef2f7;color:#5a6b7b;text-transform:uppercase;font-size:11px;letter-spacing:.4px;}
-  tr:last-child td{border-bottom:none;}
-  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;}
-  .up{background:#e4f5ea;color:var(--ok);} .down{background:#fde7ea;color:var(--bad);} .deg{background:#fdf3dd;color:#9a6a00;}
-  .dot{height:9px;width:9px;border-radius:50%;display:inline-block;margin-right:6px;}
-  .alert{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--bad);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
-  .alert .t{font-size:12px;color:#8a97a6;}
-  .muted{color:#8a97a6;font-size:12px;} h2{font-size:16px;margin:0 0 12px;}
-  .foot{max-width:1100px;margin:10px auto;padding:0 22px 30px;color:#8a97a6;font-size:12px;}
-  .legend{font-size:12px;color:#8a97a6;margin-top:8px;}
+:root{
+  --brand:#0b3c5d; --brand-2:#145a85; --accent:#4fc3f7;
+  --ok:#0f9d58; --ok-bg:#e6f4ea; --warn:#e8a33d; --warn-bg:#fdf4e3;
+  --bad:#d93025; --bad-bg:#fce8e6; --info:#1a73e8; --info-bg:#e8f0fe;
+  --bg:#f1f4f8; --surface:#fff; --line:#dfe5ec; --line-soft:#eef2f6;
+  --ink:#16222e; --ink-2:#5b6b7c; --ink-3:#8696a7;
+  --side:#0d2b40; --side-2:#0a2234; --side-ink:#a9c2d4;
+  --r:10px; --r-lg:14px;
+  --sh:0 1px 2px rgba(16,34,51,.06),0 2px 8px rgba(16,34,51,.04);
+  --sh-lg:0 4px 16px rgba(16,34,51,.10);
+  --sans:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  --mono:'Cascadia Mono','Consolas',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--info);text-decoration:none}
+
+/* ---------- Estructura ---------- */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--side),var(--side-2));color:var(--side-ink);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:11px;align-items:center;padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand .mark{width:36px;height:36px;border-radius:9px;background:var(--accent);display:grid;place-items:center;flex:0 0 auto}
+.brand .mark svg{width:20px;height:20px;display:block}
+.brand b{color:#fff;font-size:14.5px;display:block;letter-spacing:.2px}
+.brand span{font-size:11.5px;opacity:.75}
+.navlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;opacity:.5;padding:16px 18px 7px}
+.side nav{display:flex;flex-direction:column;gap:1px;padding:0 10px;overflow-y:auto}
+.side nav a{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:var(--side-ink);font-size:13.3px;cursor:pointer;border-left:3px solid transparent}
+.side nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.side nav a.on{background:rgba(79,195,247,.15);color:#fff;border-left-color:var(--accent);font-weight:600}
+.side nav a i{width:17px;height:17px;flex:0 0 auto;opacity:.9}
+.side nav a .hu{margin-left:auto;font-size:10px;font-family:var(--mono);opacity:.55;letter-spacing:-.3px}
+.side .foot{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;opacity:.6;line-height:1.45}
+
+.main{display:flex;flex-direction:column;min-width:0}
+.top{background:var(--surface);border-bottom:1px solid var(--line);padding:0 26px;display:flex;align-items:center;gap:16px;height:60px;position:sticky;top:0;z-index:20}
+.top h1{font-size:16.5px;margin:0;font-weight:650;letter-spacing:-.15px}
+.top .crumb{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+.top .spacer{flex:1}
+.live{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);background:var(--bg);padding:6px 11px;border-radius:20px;border:1px solid var(--line)}
+.beat{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:beat 2s infinite}
+@keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.wrap{padding:22px 26px 46px;max-width:1240px;width:100%}
+.view{display:none;animation:in .22s ease}
+.view.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ---------- Componentes ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:13px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:15px 16px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;inset:0 auto 0 0;width:3px;background:var(--accent)}
+.kpi.ok::after{background:var(--ok)} .kpi.bad::after{background:var(--bad)} .kpi.warn::after{background:var(--warn)}
+.kpi .k{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-3);font-weight:600}
+.kpi .v{font-size:27px;font-weight:700;margin:7px 0 2px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:11.5px;color:var(--ink-3)}
+.kpi .d b{color:var(--ok);font-weight:600} .kpi .d b.dn{color:var(--bad)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden}
+.panel>header{display:flex;align-items:center;gap:12px;padding:14px 17px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.panel>header h2{font-size:14px;margin:0;font-weight:650;letter-spacing:-.1px}
+.panel>header .sub{font-size:11.5px;color:var(--ink-3)}
+.panel>header .tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.panel .body{padding:17px}
+.panel .body.flush{padding:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+
+.btn{padding:7px 13px;border:1px solid var(--line);background:var(--surface);border-radius:8px;cursor:pointer;font-size:12.8px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px;transition:.13s}
+.btn:hover{border-color:var(--brand-2);color:var(--brand-2);background:#f7fafd}
+.btn.p{background:var(--brand-2);border-color:var(--brand-2);color:#fff}
+.btn.p:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn:active{transform:translateY(1px)}
+select.btn{padding-right:9px}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-3);font-weight:700;padding:10px 16px;background:#f7f9fc;border-bottom:1px solid var(--line)}
+td{padding:11px 16px;border-bottom:1px solid var(--line-soft);font-size:13px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#f9fbfd}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.tag .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.t-ok{background:var(--ok-bg);color:var(--ok)} .t-bad{background:var(--bad-bg);color:var(--bad)}
+.t-warn{background:var(--warn-bg);color:#9a6a00} .t-info{background:var(--info-bg);color:var(--info)}
+.t-mute{background:#eef1f5;color:var(--ink-2)}
+
+.bar{height:6px;background:var(--line-soft);border-radius:4px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:4px;transition:width .4s}
+.bar i.w{background:var(--warn)} .bar i.b{background:var(--bad)}
+
+.feed{display:flex;gap:12px;padding:13px 17px;border-bottom:1px solid var(--line-soft);align-items:flex-start}
+.feed:last-child{border-bottom:none}
+.feed .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto;font-size:14px}
+.feed .ic.bad{background:var(--bad-bg);color:var(--bad)} .feed .ic.warn{background:var(--warn-bg);color:#9a6a00}
+.feed .ic.ok{background:var(--ok-bg);color:var(--ok)} .feed .ic.info{background:var(--info-bg);color:var(--info)}
+.feed .tx{flex:1;min-width:0}
+.feed .tx b{font-size:13px;font-weight:600;display:block}
+.feed .tx span{font-size:12px;color:var(--ink-2)}
+.feed .when{font-size:11px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+.empty{padding:38px 20px;text-align:center;color:var(--ink-3);font-size:13px}
+
+.hu{display:inline-flex;align-items:center;gap:6px;background:var(--info-bg);color:var(--info);padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;font-family:var(--mono)}
+.note{display:flex;gap:9px;background:#f7f9fc;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:11px 14px;font-size:12.3px;color:var(--ink-2);margin-top:14px}
+.note b{color:var(--ink)}
+.log{font-family:var(--mono);font-size:12px;background:#0d2b40;color:#cfe3f0;border-radius:10px;padding:13px 15px;max-height:330px;overflow:auto;line-height:1.75}
+.log .ts{color:#6f93ad} .log .er{color:#ff8a80} .log .wa{color:#ffcc80} .log .in{color:#80cbc4}
+.room{border:1px solid var(--line);border-radius:11px;padding:13px;background:var(--surface)}
+.room .top2{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.room b{font-size:13px} .room .cap{font-size:11px;color:var(--ink-3)}
+.room .pc{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px}
+svg.chart{display:block;width:100%;height:auto;overflow:visible}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-top:10px}
+.lg i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto}
+  .side nav{flex-direction:row;overflow-x:auto;padding:8px 10px}
+  .side nav a .hu,.side .foot,.navlabel{display:none}
+  .wrap{padding:16px}
+}
+@media print{.side,.top,.btn{display:none}.app{display:block}.view{display:block!important}}
 </style>
 </head>
 <body>
-<header>
-  <div><h1>NOC Redes — Universidad EAFIT</h1><div class="sub">Plataforma de Monitoreo y Automatización de Infraestructura · Mockup funcional Sprint 1</div></div>
-  <div class="sub">Área: Infraestructura TI – Redes</div>
-</header>
-<nav>
-  <button data-v="mon" class="active">📡 Monitoreo (HU-01)</button>
-  <button data-v="ale">🔔 Alertas (HU-02)</button>
-  <button data-v="rep">📊 Reportes (HU-03)</button>
-</nav>
-<main>
-  <!-- HU-01 Monitoreo -->
-  <section id="mon" class="view active">
-    <div class="cards">
-      <div class="card"><div class="k">Equipos monitoreados</div><div class="v" id="m-total">0</div></div>
-      <div class="card"><div class="k">En línea</div><div class="v" style="color:var(--ok)" id="m-up">0</div></div>
-      <div class="card"><div class="k">Caídos</div><div class="v" style="color:var(--bad)" id="m-down">0</div></div>
-      <div class="card"><div class="k">Disponibilidad</div><div class="v" id="m-avail">0%</div></div>
+<div class="app">
+<aside class="side">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 18h3v-6H4zM10.5 18h3V5h-3zM17 18h3v-9h-3z" fill="#0d2b40"/></svg></div>
+    <div><b>NOC Redes</b><span>Universidad EAFIT</span></div>
+  </div>
+  <div class="navlabel">Operación</div>
+  <nav id="nav">
+    <a data-v="inicio" class="on"><i>◉</i>Resumen</a>
+    <a data-v="mon"><i>◈</i>Monitoreo<span class="hu">HU-01</span></a>
+    <a data-v="ale"><i>◆</i>Alertas<span class="hu">HU-02</span></a>
+    <a data-v="inc"><i>◍</i>Incidentes<span class="hu">HU-04</span></a>
+  </nav>
+  <div class="navlabel">Información</div>
+  <nav id="nav2">
+    <a data-v="rep"><i>▤</i>Reportes<span class="hu">HU-03</span></a>
+    <a data-v="inv"><i>▣</i>Inventario<span class="hu">HU-05</span></a>
+    <a data-v="log"><i>▥</i>Logs<span class="hu">HU-06</span></a>
+    <a data-v="ocu"><i>▦</i>Ocupación<span class="hu">HU-07</span></a>
+  </nav>
+  <div class="foot">
+    Prototipo funcional · datos simulados<br>
+    Sistemas de Información · 2026-2
+  </div>
+</aside>
+
+<div class="main">
+  <header class="top">
+    <div><h1 id="t-title">Resumen operativo</h1><div class="crumb" id="t-crumb">Infraestructura TI – Redes</div></div>
+    <div class="spacer"></div>
+    <div class="live"><span class="beat"></span><span id="t-clock">--:--:--</span></div>
+  </header>
+  <div class="wrap">
+
+  <!-- ══════════ RESUMEN ══════════ -->
+  <section id="inicio" class="view on">
+    <div class="kpis">
+      <div class="kpi ok"><div class="k">Disponibilidad</div><div class="v" id="k-avail">—</div><div class="d">objetivo SLA 99,0 %</div></div>
+      <div class="kpi"><div class="k">Equipos activos</div><div class="v" id="k-dev">—</div><div class="d" id="k-dev-d">—</div></div>
+      <div class="kpi bad"><div class="k">Incidentes abiertos</div><div class="v" id="k-inc">—</div><div class="d" id="k-inc-d">—</div></div>
+      <div class="kpi warn"><div class="k">Horas/mes liberadas</div><div class="v">240</div><div class="d">estimado sobre 8 procesos</div></div>
     </div>
-    <div class="toolbar">
-      <label>Intervalo de sondeo:</label>
-      <select id="interval">
-        <option value="5">cada 5 s (demo)</option>
-        <option value="10">cada 10 s</option>
-        <option value="30">cada 30 s</option>
-        <option value="300">cada 5 min (real)</option>
-      </select>
-      <button class="act" id="refreshNow">Sondear ahora</button>
-      <span class="muted" id="lastPoll"></span>
+    <div class="grid2">
+      <div class="panel">
+        <header><h2>Disponibilidad últimas 24 h</h2><span class="sub">muestreo horario</span></header>
+        <div class="body"><div id="c-avail"></div>
+          <div class="lg"><span><i style="background:var(--ok)"></i>Disponibilidad</span><span><i style="background:var(--bad)"></i>Umbral SLA 99 %</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <header><h2>Actividad reciente</h2><span class="sub">generada por el sistema</span></header>
+        <div class="body flush" id="feed-home"></div>
+      </div>
     </div>
-    <table>
-      <thead><tr><th>Equipo</th><th>Tipo</th><th>Ubicación</th><th>IP</th><th>Estado</th><th>Últ. respuesta</th></tr></thead>
-      <tbody id="devBody"></tbody>
-    </table>
-    <div class="legend">HU-01: sondeo automático en intervalo configurable · alerta ante no-respuesta · historial de estado por equipo.</div>
+    <div class="panel">
+      <header><h2>Procesos intervenidos</h2><span class="sub">8 procesos levantados · horas/mes recuperables</span></header>
+      <div class="body"><div id="c-proc"></div></div>
+    </div>
   </section>
 
-  <!-- HU-02 Alertas -->
+  <!-- ══════════ HU-01 MONITOREO ══════════ -->
+  <section id="mon" class="view">
+    <div class="kpis">
+      <div class="kpi"><div class="k">Monitoreados</div><div class="v" id="m-total">—</div><div class="d">switches y puntos de acceso</div></div>
+      <div class="kpi ok"><div class="k">En línea</div><div class="v" id="m-up">—</div><div class="d">responden al sondeo</div></div>
+      <div class="kpi warn"><div class="k">Degradados</div><div class="v" id="m-deg">—</div><div class="d">latencia sobre el umbral</div></div>
+      <div class="kpi bad"><div class="k">Sin respuesta</div><div class="v" id="m-down">—</div><div class="d">generan alerta automática</div></div>
+    </div>
+    <div class="panel">
+      <header>
+        <h2>Estado de la infraestructura</h2><span class="hu">HU-01</span>
+        <div class="tools">
+          <label class="sub">Sondeo</label>
+          <select class="btn" id="m-int"><option value="4">cada 4 s (demo)</option><option value="15">cada 15 s</option><option value="60">cada 60 s</option><option value="300" selected>cada 5 min (real)</option></select>
+          <button class="btn p" id="m-now">Sondear ahora</button>
+        </div>
+      </header>
+      <div class="body flush">
+        <table><thead><tr><th>Equipo</th><th>Tipo</th><th>Ubicación</th><th>Dirección IP</th><th class="num">Latencia</th><th>Estado</th><th>Última respuesta</th></tr></thead>
+        <tbody id="m-body"></tbody></table>
+      </div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> Consulta de estado en intervalo configurable · alerta ante no-respuesta · registro histórico por equipo. El contador de sondeos y la marca de tiempo evidencian la ejecución automática.</div>
+  </section>
+
+  <!-- ══════════ HU-02 ALERTAS ══════════ -->
   <section id="ale" class="view">
-    <h2>Alertas de incidentes</h2>
-    <div class="toolbar">
-      <span class="muted">Se generan automáticamente cuando un equipo deja de responder (&lt; 1 min). Incluyen equipo, ubicación y hora.</span>
-      <button class="act sec" id="clearAck">Marcar todas como vistas</button>
+    <div class="kpis">
+      <div class="kpi bad"><div class="k">Sin atender</div><div class="v" id="a-new">—</div><div class="d">requieren acción</div></div>
+      <div class="kpi"><div class="k">Generadas hoy</div><div class="v" id="a-tot">—</div><div class="d">por el sistema, sin intervención</div></div>
+      <div class="kpi ok"><div class="k">Tiempo de detección</div><div class="v">&lt; 1 min</div><div class="d">desde la caída</div></div>
     </div>
-    <div id="alertList"></div>
+    <div class="panel">
+      <header><h2>Alertas automáticas</h2><span class="hu">HU-02</span>
+        <div class="tools">
+          <select class="btn" id="a-filter"><option value="all">Todas</option><option value="new">Sin atender</option><option value="ack">Atendidas</option></select>
+          <button class="btn" id="a-ack">Marcar todas como vistas</button>
+        </div>
+      </header>
+      <div class="body flush" id="a-list"></div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> La alerta se emite en menos de un minuto desde la no-respuesta e incluye equipo, ubicación y hora. Cada alerta puede escalarse a incidente con un clic, lo que alimenta la HU-04.</div>
   </section>
 
-  <!-- HU-03 Reportes -->
+  <!-- ══════════ HU-04 INCIDENTES ══════════ -->
+  <section id="inc" class="view">
+    <div class="kpis">
+      <div class="kpi bad"><div class="k">Abiertos</div><div class="v" id="i-open">—</div><div class="d" id="i-open-d">—</div></div>
+      <div class="kpi warn"><div class="k">En riesgo de SLA</div><div class="v" id="i-risk">—</div><div class="d">menos de 2 h de margen</div></div>
+      <div class="kpi ok"><div class="k">Cumplimiento SLA</div><div class="v" id="i-sla">—</div><div class="d">últimos 30 días</div></div>
+      <div class="kpi"><div class="k">Tiempo medio de cierre</div><div class="v" id="i-mttr">—</div><div class="d">desde el registro</div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Registro y trazabilidad de incidentes</h2><span class="hu">HU-04</span>
+        <div class="tools">
+          <select class="btn" id="i-filter"><option value="all">Todos los estados</option><option value="Abierto">Abierto</option><option value="En proceso">En proceso</option><option value="Cerrado">Cerrado</option></select>
+          <button class="btn" id="i-csv">Exportar CSV</button>
+        </div>
+      </header>
+      <div class="body flush">
+        <table><thead><tr><th>Ticket</th><th>Equipo</th><th>Descripción</th><th>Prioridad</th><th>Registrado</th><th class="num">Tiempo</th><th>SLA</th><th>Estado</th></tr></thead>
+        <tbody id="i-body"></tbody></table>
+      </div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> Cada incidente tiene identificador, responsable, marca de tiempo y estado. El reloj de SLA corre desde el registro y el sistema advierte antes de incumplirlo, no después. Resuelve la brecha <b>D09</b> (medición de tiempos de ciclo).</div>
+  </section>
+
+  <!-- ══════════ HU-03 REPORTES ══════════ -->
   <section id="rep" class="view">
-    <h2>Reporte de desempeño de red</h2>
-    <div class="toolbar">
-      <label>Período:</label>
-      <select id="period"><option>Hoy</option><option>Últimos 7 días</option><option>Últimos 30 días</option></select>
-      <button class="act" id="genReport">Generar reporte</button>
-      <button class="act sec" id="exportCsv">Exportar CSV</button>
-      <button class="act sec" id="printRep">Imprimir / PDF</button>
+    <div class="panel">
+      <header><h2>Reporte de desempeño de red</h2><span class="hu">HU-03</span>
+        <div class="tools">
+          <select class="btn" id="r-period"><option value="1">Hoy</option><option value="7" selected>Últimos 7 días</option><option value="30">Últimos 30 días</option></select>
+          <button class="btn p" id="r-gen">Generar</button>
+          <button class="btn" id="r-csv">Exportar CSV</button>
+          <button class="btn" id="r-print">Imprimir / PDF</button>
+        </div>
+      </header>
+      <div class="body">
+        <div class="kpis" style="margin-bottom:18px">
+          <div class="kpi ok"><div class="k">Disponibilidad media</div><div class="v" id="r-av">—</div><div class="d" id="r-av-d">—</div></div>
+          <div class="kpi"><div class="k">Incidentes</div><div class="v" id="r-in">—</div><div class="d">registrados en el período</div></div>
+          <div class="kpi"><div class="k">Tiempo medio de resolución</div><div class="v" id="r-mt">—</div><div class="d">horas por incidente</div></div>
+          <div class="kpi warn"><div class="k">Equipo más inestable</div><div class="v" id="r-worst" style="font-size:16px">—</div><div class="d" id="r-worst-d">—</div></div>
+        </div>
+        <div id="c-rep"></div>
+      </div>
     </div>
-    <div class="cards">
-      <div class="card"><div class="k">Disponibilidad promedio</div><div class="v" id="r-avail">—</div></div>
-      <div class="card"><div class="k">Incidentes del período</div><div class="v" id="r-inc">—</div></div>
-      <div class="card"><div class="k">Tiempo medio de resolución</div><div class="v" id="r-mttr">—</div></div>
+    <div class="panel">
+      <header><h2>Detalle por equipo</h2><span class="sub" id="r-when">—</span></header>
+      <div class="body flush">
+        <table><thead><tr><th>Equipo</th><th>Ubicación</th><th class="num">Disponibilidad</th><th class="num">Incidentes</th><th class="num">Tiempo atención</th><th>Tendencia</th></tr></thead>
+        <tbody id="r-body"></tbody></table>
+      </div>
     </div>
-    <table>
-      <thead><tr><th>Equipo</th><th>Disponibilidad</th><th>Incidentes</th><th>Tiempo atención (prom.)</th></tr></thead>
-      <tbody id="repBody"></tbody>
-    </table>
-    <div class="legend">HU-03: reporte programado con disponibilidad, incidentes y tiempos; exportable a CSV/PDF.</div>
+    <div class="note"><b>Criterios de aceptación.</b> El reporte se genera automáticamente para el período elegido, contiene disponibilidad, incidentes y tiempos, y es exportable. Resuelve el proceso <b>P02</b>, que hoy consume 40 h/mes de elaboración manual.</div>
   </section>
-</main>
-<div class="foot">Mockup funcional con datos simulados · Entrega 2 — Sistemas de Información EAFIT · Historias de usuario del Sprint 1 (HU-01 monitoreo, HU-02 alertas, HU-03 reportes).</div>
 
+  <!-- ══════════ HU-05 INVENTARIO ══════════ -->
+  <section id="inv" class="view">
+    <div class="kpis">
+      <div class="kpi"><div class="k">Equipos registrados</div><div class="v" id="v-tot">—</div><div class="d">switches y puntos de acceso</div></div>
+      <div class="kpi ok"><div class="k">Calidad del dato</div><div class="v" id="v-q">—</div><div class="d">registros completos y consistentes</div></div>
+      <div class="kpi warn"><div class="k">Con observaciones</div><div class="v" id="v-bad">—</div><div class="d">requieren verificación</div></div>
+      <div class="kpi"><div class="k">Garantías por vencer</div><div class="v" id="v-war">—</div><div class="d">en los próximos 6 meses</div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Inventario con control de calidad</h2><span class="hu">HU-05</span>
+        <div class="tools">
+          <select class="btn" id="v-filter"><option value="all">Todos</option><option value="bad">Solo con observaciones</option></select>
+          <button class="btn" id="v-csv">Exportar CSV</button>
+        </div>
+      </header>
+      <div class="body flush">
+        <table><thead><tr><th>Equipo</th><th>Modelo</th><th>Serie</th><th>Ubicación</th><th>Firmware</th><th>Garantía</th><th>Calidad del dato</th></tr></thead>
+        <tbody id="v-body"></tbody></table>
+      </div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> El inventario se actualiza desde el sondeo y cada registro se valida en completitud, duplicados y exactitud. Las observaciones se muestran en vez de ocultarse. Resuelve la brecha <b>D12</b> (calidad de datos) y el proceso <b>P04</b>.</div>
+  </section>
+
+  <!-- ══════════ HU-06 LOGS ══════════ -->
+  <section id="log" class="view">
+    <div class="kpis">
+      <div class="kpi"><div class="k">Eventos consolidados</div><div class="v" id="l-tot">—</div><div class="d">últimas 24 h, 4 fuentes</div></div>
+      <div class="kpi bad"><div class="k">Errores</div><div class="v" id="l-err">—</div><div class="d">severidad alta</div></div>
+      <div class="kpi warn"><div class="k">Patrones detectados</div><div class="v" id="l-pat">—</div><div class="d">agrupaciones no aleatorias</div></div>
+      <div class="kpi ok"><div class="k">Reducción de ruido</div><div class="v" id="l-noise">—</div><div class="d">eventos agrupados</div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Patrones detectados automáticamente</h2><span class="hu">HU-06</span></header>
+      <div class="body flush" id="l-pats"></div>
+    </div>
+    <div class="panel">
+      <header><h2>Flujo consolidado</h2>
+        <div class="tools">
+          <select class="btn" id="l-sev"><option value="all">Todas las severidades</option><option value="ERROR">Solo errores</option><option value="WARN">Errores y avisos</option></select>
+          <button class="btn" id="l-pause">Pausar</button>
+        </div>
+      </header>
+      <div class="body"><div class="log" id="l-body"></div></div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> Los registros de las cuatro fuentes llegan a un único flujo con formato homogéneo, y el sistema agrupa los eventos repetidos en patrones en lugar de mostrarlos sueltos. Resuelve el proceso <b>P05</b> (30 h/mes de revisión manual).</div>
+  </section>
+
+  <!-- ══════════ HU-07 OCUPACIÓN ══════════ -->
+  <section id="ocu" class="view">
+    <div class="kpis">
+      <div class="kpi"><div class="k">Aulas monitoreadas</div><div class="v" id="o-tot">—</div><div class="d">con sensor ESP32</div></div>
+      <div class="kpi ok"><div class="k">Ocupación media</div><div class="v" id="o-avg">—</div><div class="d">sobre capacidad instalada</div></div>
+      <div class="kpi warn"><div class="k">Subutilizadas</div><div class="v" id="o-low">—</div><div class="d">por debajo del 35 %</div></div>
+      <div class="kpi bad"><div class="k">Sensores sin reportar</div><div class="v" id="o-off">—</div><div class="d">más de 15 min sin dato</div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Ocupación estimada en tiempo real</h2><span class="hu">HU-07</span><span class="sub">sensores ESP32 · lectura cada 5 min</span></header>
+      <div class="body"><div class="rooms" id="o-rooms"></div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Ocupación por franja horaria</h2><span class="sub">promedio de la semana</span></header>
+      <div class="body"><div id="c-ocu"></div></div>
+    </div>
+    <div class="note"><b>Criterios de aceptación.</b> Cada aula reporta ocupación estimada y el panel distingue entre aula vacía y sensor caído, que es la confusión que invalida este tipo de medición. Resuelve el proceso <b>P08</b> (45 h/mes) y aporta el dato para decisiones de asignación de espacios.</div>
+  </section>
+
+  </div>
+</div>
+</div>
 <script>
-const devices=[
- {n:"SW-Core-01",t:"Switch",u:"Bloque 19 - Datacenter",ip:"10.1.0.1"},
- {n:"SW-Dist-Bloque38",t:"Switch",u:"Bloque 38",ip:"10.1.2.4"},
- {n:"AP-Biblioteca-3",t:"Access Point",u:"Biblioteca piso 3",ip:"10.2.5.33"},
- {n:"AP-Aula-25-204",t:"Access Point",u:"Bloque 25 - Aula 204",ip:"10.2.7.12"},
- {n:"SW-Acceso-Bloque33",t:"Switch",u:"Bloque 33",ip:"10.1.3.9"},
- {n:"AP-Cafeteria",t:"Access Point",u:"Cafetería central",ip:"10.2.9.5"},
- {n:"AP-Auditorio",t:"Access Point",u:"Auditorio Fundadores",ip:"10.2.4.21"},
- {n:"SW-Dist-Deportes",t:"Switch",u:"Centro deportivo",ip:"10.1.4.2"},
+"use strict";
+/* ════════════════════════════════════════════════════════════════
+   NOC Redes · Universidad EAFIT
+   Prototipo funcional con datos simulados.
+   Las 7 historias de usuario del backlog se implementan como vistas.
+   Sin dependencias externas: funciona sin conexión.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+let _seed = 20262;
+const rnd = () => (_seed = (_seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+const pick = a => a[Math.floor(rnd() * a.length)];
+const int = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const pad = n => String(n).padStart(2, "0");
+const hhmm = d => pad(d.getHours()) + ":" + pad(d.getMinutes());
+const hhmmss = d => hhmm(d) + ":" + pad(d.getSeconds());
+const fecha = d => pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear();
+const nf = (n, d = 1) => n.toLocaleString("es-CO", { minimumFractionDigits: d, maximumFractionDigits: d });
+const dur = m => m < 60 ? m + " min" : (m / 60 < 24 ? nf(m / 60, 1) + " h" : nf(m / 1440, 1) + " d");
+
+function descargarCSV(nombre, filas) {
+  const csv = filas.map(f => f.map(c => {
+    const t = String(c ?? "");
+    return /[;"\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  }).join(";")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+  a.download = nombre;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------- datos base ---------- */
+const EQUIPOS = [
+  { n: "SW-CORE-01",     t: "Switch núcleo",  u: "Bloque 19 · Centro de datos", ip: "10.1.0.1",   mod: "Catalyst 9500", ser: "FOC2314A1QA", fw: "17.09.4a", gar: "2028-03" },
+  { n: "SW-CORE-02",     t: "Switch núcleo",  u: "Bloque 19 · Centro de datos", ip: "10.1.0.2",   mod: "Catalyst 9500", ser: "FOC2314A1QB", fw: "17.09.4a", gar: "2028-03" },
+  { n: "SW-DIST-B38",    t: "Switch",         u: "Bloque 38 · Piso 2",          ip: "10.1.2.4",   mod: "Catalyst 9300", ser: "FOC2208B3KL", fw: "17.06.1",  gar: "2027-01" },
+  { n: "SW-DIST-B33",    t: "Switch",         u: "Bloque 33 · Piso 1",          ip: "10.1.3.9",   mod: "Catalyst 9300", ser: "FOC2208B3KL", fw: "16.12.5",  gar: "2027-06" },
+  { n: "SW-DIST-DEP",    t: "Switch",         u: "Centro deportivo",            ip: "10.1.4.2",   mod: "Catalyst 9200", ser: "",            fw: "16.12.5",  gar: "2026-10" },
+  { n: "SW-ACC-B25",     t: "Switch acceso",  u: "Bloque 25 · Piso 2",          ip: "10.1.5.7",   mod: "Catalyst 9200", ser: "FOC2251C8TR", fw: "17.03.2",  gar: "2027-08" },
+  { n: "AP-BIB-P3-01",   t: "Punto de acceso", u: "Biblioteca · Piso 3",        ip: "10.2.5.33",  mod: "Aironet C9120", ser: "KWC2419F2XP", fw: "17.09.3",  gar: "2027-05" },
+  { n: "AP-BIB-P4-02",   t: "Punto de acceso", u: "Biblioteca · Piso 4",        ip: "10.2.5.41",  mod: "Aironet C9120", ser: "KWC2419F2XQ", fw: "17.09.3",  gar: "2027-05" },
+  { n: "AP-25-204",      t: "Punto de acceso", u: "Bloque 25 · Aula 204",       ip: "10.2.7.12",  mod: "Aironet C9115", ser: "KWC2102D9LM", fw: "17.03.1",  gar: "2027-09" },
+  { n: "AP-38-301",      t: "Punto de acceso", u: "Bloque 38 · Aula 301",       ip: "10.2.7.28",  mod: "Aironet C9115", ser: "KWC2102D9LN", fw: "17.03.1",  gar: "2027-09" },
+  { n: "AP-CAFETERIA",   t: "Punto de acceso", u: "Cafetería central",          ip: "10.2.9.5",   mod: "Aironet C9115", ser: "KWC2102D9LP", fw: "17.09.3",  gar: "2027-02" },
+  { n: "AP-AUDITORIO",   t: "Punto de acceso", u: "Auditorio Fundadores",       ip: "10.2.4.21",  mod: "Aironet C9130", ser: "KWC2330H7VB", fw: "17.09.4",  gar: "2028-01" },
+  { n: "AP-LAB-SIS",     t: "Punto de acceso", u: "Bloque 19 · Lab. Sistemas",  ip: "10.2.6.14",  mod: "Aironet C9120", ser: "KWC2419F2XP", fw: "17.09.3",  gar: "2027-05" },
+  { n: "AP-PLAZOLETA",   t: "Punto de acceso", u: "Plazoleta central",          ip: "10.2.8.3",   mod: "Aironet C9124", ser: "KWC2401J5WD", fw: "",         gar: "2027-11" }
 ];
-let state={}, alerts=[], timer=null, polls=0;
-devices.forEach(d=>state[d.n]={status:"up",last:new Date(),history:[]});
-function fmt(dt){return dt.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
-function poll(){
-  polls++;
-  devices.forEach(d=>{
-    const r=Math.random();
-    let s = r<0.08 ? "down" : (r<0.16 ? "deg":"up");
-    const prev=state[d.n].status;
-    state[d.n].status=s;
-    if(s!=="down") state[d.n].last=new Date();
-    state[d.n].history.push(s);
-    if(s==="down" && prev!=="down"){
-      alerts.unshift({dev:d.n,u:d.u,ip:d.ip,t:new Date(),ack:false});
-    }
-  });
-  renderMon(); renderAlerts();
-  document.getElementById('lastPoll').textContent="Último sondeo: "+fmt(new Date())+" (#"+polls+")";
-}
-function renderMon(){
-  const b=document.getElementById('devBody');b.innerHTML="";
-  let up=0,down=0;
-  devices.forEach(d=>{
-    const s=state[d.n].status; if(s==="up")up++; if(s==="down")down++;
-    const pill=s==="up"?'<span class="pill up">● En línea</span>':s==="down"?'<span class="pill down">● Caído</span>':'<span class="pill deg">● Degradado</span>';
-    b.innerHTML+=`<tr><td><b>${d.n}</b></td><td>${d.t}</td><td>${d.u}</td><td>${d.ip}</td><td>${pill}</td><td>${fmt(state[d.n].last)}</td></tr>`;
-  });
-  document.getElementById('m-total').textContent=devices.length;
-  document.getElementById('m-up').textContent=up;
-  document.getElementById('m-down').textContent=down;
-  document.getElementById('m-avail').textContent=Math.round(up/devices.length*100)+"%";
-}
-function renderAlerts(){
-  const l=document.getElementById('alertList');
-  if(!alerts.length){l.innerHTML='<p class="muted">Sin alertas activas. Todo opera con normalidad.</p>';return;}
-  l.innerHTML=alerts.slice(0,20).map(a=>`<div class="alert" style="border-left-color:${a.ack?'#b9c2cc':'var(--bad)'}">
-    <div style="font-size:20px">${a.ack?'✓':'🔴'}</div>
-    <div><b>Caída detectada — ${a.dev}</b><br>
-    <span class="muted">${a.u} · ${a.ip}</span><br>
-    <span class="t">Detectada: ${a.t.toLocaleString('es-CO')}</span></div></div>`).join("");
-}
-function genReport(){
-  const rows=devices.map(d=>{
-    const h=state[d.n].history; const tot=h.length||1;
-    const av=Math.round(h.filter(x=>x==="up").length/tot*100);
-    const inc=alerts.filter(a=>a.dev===d.n).length;
-    const mttr=inc?(Math.round(5+Math.random()*25)):0;
-    return {n:d.n,av:isFinite(av)?av:100,inc,mttr};
-  });
-  const body=document.getElementById('repBody');
-  body.innerHTML=rows.map(r=>`<tr><td><b>${r.n}</b></td><td>${r.av}%</td><td>${r.inc}</td><td>${r.mttr?r.mttr+' min':'—'}</td></tr>`).join("");
-  const avg=Math.round(rows.reduce((s,r)=>s+r.av,0)/rows.length);
-  const inc=rows.reduce((s,r)=>s+r.inc,0);
-  const mttrs=rows.filter(r=>r.mttr); const mttr=mttrs.length?Math.round(mttrs.reduce((s,r)=>s+r.mttr,0)/mttrs.length):0;
-  document.getElementById('r-avail').textContent=avg+"%";
-  document.getElementById('r-inc').textContent=inc;
-  document.getElementById('r-mttr').textContent=mttr?mttr+" min":"—";
-  window._rep=rows;
-}
-function exportCsv(){
-  if(!window._rep){genReport();}
-  let csv="Equipo,Disponibilidad(%),Incidentes,TiempoAtencion(min)\n"+window._rep.map(r=>`${r.n},${r.av},${r.inc},${r.mttr}`).join("\n");
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download="reporte_red_eafit.csv";a.click();
-}
-document.querySelectorAll('nav button').forEach(btn=>btn.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  btn.classList.add('active');document.getElementById(btn.dataset.v).classList.add('active');
+
+const AULAS = [
+  { n: "25-204", cap: 40 }, { n: "25-206", cap: 40 }, { n: "38-301", cap: 35 },
+  { n: "38-305", cap: 35 }, { n: "33-101", cap: 60 }, { n: "19-S01", cap: 28 },
+  { n: "Biblioteca · Sala 3", cap: 50 }, { n: "Lab. Sistemas", cap: 24 }
+];
+
+const PROCESOS = [
+  { c: "P01", n: "Monitoreo de disponibilidad y alertas", h: 60, hu: "HU-01 / HU-02" },
+  { c: "P08", n: "Ocupación de aulas (ESP32)",            h: 45, hu: "HU-07" },
+  { c: "P02", n: "Reportes de desempeño",                 h: 40, hu: "HU-03" },
+  { c: "P05", n: "Consolidación de logs",                 h: 30, hu: "HU-06" },
+  { c: "P03", n: "Incidentes de conectividad",            h: 28, hu: "HU-04" },
+  { c: "P04", n: "Inventario de switches y AP",           h: 20, hu: "HU-05" },
+  { c: "P07", n: "Habilitación de puntos de red y VLAN",  h: 12, hu: "fase 2" },
+  { c: "P06", n: "Actualizaciones de firmware",           h: 5,  hu: "fase 2" }
+];
+
+const CAUSAS = [
+  "Puerto sin enlace tras corte de energía", "Saturación del canal 5 GHz",
+  "Pérdida de paquetes sostenida sobre el 5 %", "Switch sin respuesta a ICMP",
+  "Reinicio inesperado del equipo", "Degradación de latencia sobre 120 ms",
+  "Desconexión del enlace de fibra ascendente", "Fuente de poder con alarma térmica"
+];
+const TECNICOS = ["J. Acevedo", "D. Ramírez", "L. Gómez", "C. Posada"];
+
+/* ---------- estado ---------- */
+const S = {
+  eq: {}, alertas: [], incidentes: [], logs: [], aulas: [],
+  sondeos: 0, ultimoSondeo: null, timer: null, logTimer: null, logPausado: false
+};
+
+EQUIPOS.forEach((e, i) => {
+  S.eq[e.n] = {
+    estado: i === 4 ? "down" : (i === 9 ? "deg" : "up"),
+    lat: int(2, 18), ultima: new Date(Date.now() - int(0, 180) * 1000),
+    hist: Array.from({ length: 24 }, () => 97 + rnd() * 3), inc: 0
+  };
 });
-document.getElementById('refreshNow').onclick=poll;
-document.getElementById('clearAck').onclick=()=>{alerts.forEach(a=>a.ack=true);renderAlerts();};
-document.getElementById('genReport').onclick=genReport;
-document.getElementById('exportCsv').onclick=exportCsv;
-document.getElementById('printRep').onclick=()=>window.print();
-function restart(){if(timer)clearInterval(timer);timer=setInterval(poll,parseInt(document.getElementById('interval').value)*1000);}
-document.getElementById('interval').onchange=restart;
-poll();restart();
+
+/* incidentes históricos */
+(function () {
+  const estados = ["Cerrado", "Cerrado", "Cerrado", "Cerrado", "En proceso", "Abierto"];
+  for (let i = 0; i < 18; i++) {
+    const eq = pick(EQUIPOS);
+    const est = i < 3 ? estados[5 - i % 2] : pick(estados);
+    const abierto = est !== "Cerrado";
+    const minutos = abierto ? int(20, 540) : int(25, 420);
+    const prio = pick(["Alta", "Alta", "Media", "Media", "Baja"]);
+    const slaMin = prio === "Alta" ? 240 : prio === "Media" ? 480 : 1440;
+    S.incidentes.push({
+      id: "INC-" + (1042 + i), eq: eq.n, ubic: eq.u, desc: pick(CAUSAS),
+      prio, estado: est, resp: pick(TECNICOS),
+      creado: new Date(Date.now() - minutos * 60000), min: minutos, slaMin
+    });
+    S.eq[eq.n].inc++;
+  }
+  S.incidentes.sort((a, b) => b.creado - a.creado);
+})();
+
+/* aulas */
+AULAS.forEach((a, i) => {
+  const off = i === 5;
+  S.aulas.push({
+    ...a, ocup: off ? 0 : int(2, a.cap), off,
+    ultima: new Date(Date.now() - (off ? 42 : int(0, 4)) * 60000)
+  });
+});
+
+/* ---------- gráficos SVG ---------- */
+function svgLinea(datos, { alto = 190, umbral = null, color = "#0f9d58", etiquetas = [] } = {}) {
+  const W = 760, H = alto, pl = 42, pr = 12, pt = 12, pb = 26;
+  const min = Math.min(...datos, umbral ?? Infinity) - .35;
+  const max = Math.max(...datos, umbral ?? -Infinity) + .25;
+  const x = i => pl + i * (W - pl - pr) / (datos.length - 1);
+  const y = v => pt + (max - v) * (H - pt - pb) / (max - min);
+  const linea = datos.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const area = linea + ` L${x(datos.length - 1).toFixed(1)} ${H - pb} L${pl} ${H - pb} Z`;
+  let g = "";
+  for (let k = 0; k <= 3; k++) {
+    const v = min + (max - min) * k / 3;
+    g += `<line x1="${pl}" x2="${W - pr}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="#eef2f6"/>
+          <text x="${pl - 8}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="#8696a7">${nf(v, 1)}%</text>`;
+  }
+  let ejes = "";
+  (etiquetas.length ? etiquetas : datos.map((_, i) => i)).forEach((t, i) => {
+    if (datos.length > 12 && i % 3) return;
+    ejes += `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#8696a7">${t}</text>`;
+  });
+  const u = umbral == null ? "" :
+    `<line x1="${pl}" x2="${W - pr}" y1="${y(umbral).toFixed(1)}" y2="${y(umbral).toFixed(1)}" stroke="#d93025" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+    <defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity=".22"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    ${g}${u}<path d="${area}" fill="url(#gA)"/>
+    <path d="${linea}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${datos.map((v, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="2.6" fill="#fff" stroke="${color}" stroke-width="1.8"><title>${etiquetas[i] || i}: ${nf(v, 2)}%</title></circle>`).join("")}
+    ${ejes}</svg>`;
+}
+
+function svgBarras(items, { alto = 260, color = "#145a85" } = {}) {
+  const W = 760, H = alto, pl = 212, pr = 54, pt = 6, pb = 6;
+  const max = Math.max(...items.map(i => i.v));
+  const h = (H - pt - pb) / items.length;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${items.map((it, i) => {
+    const y = pt + i * h, bh = Math.min(h - 9, 22);
+    const w = (W - pl - pr) * it.v / max;
+    return `<text x="${pl - 10}" y="${y + bh / 2 + 4}" text-anchor="end" font-size="11.5" fill="#16222e">${it.l}</text>
+      <rect x="${pl}" y="${y}" width="${(W - pl - pr).toFixed(1)}" height="${bh}" rx="4" fill="#eef2f6"/>
+      <rect x="${pl}" y="${y}" width="${w.toFixed(1)}" height="${bh}" rx="4" fill="${it.c || color}"><title>${it.l}: ${it.v} h/mes</title></rect>
+      <text x="${(pl + w + 9).toFixed(1)}" y="${y + bh / 2 + 4}" font-size="11.5" font-weight="600" fill="#5b6b7c">${it.v} h</text>`;
+  }).join("")}</svg>`;
+}
+
+function svgColumnas(datos, etiquetas, { alto = 200 } = {}) {
+  const W = 760, H = alto, pl = 38, pr = 10, pt = 12, pb = 28;
+  const max = Math.max(...datos) * 1.12;
+  const bw = (W - pl - pr) / datos.length;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
+    ${[0, .5, 1].map(k => { const y = pt + (1 - k) * (H - pt - pb); return `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="#eef2f6"/><text x="${pl - 7}" y="${y + 3.5}" text-anchor="end" font-size="10" fill="#8696a7">${Math.round(max * k)}%</text>`; }).join("")}
+    ${datos.map((v, i) => {
+      const bh = (v / max) * (H - pt - pb), x = pl + i * bw + bw * .18, w = bw * .64;
+      const c = v >= 70 ? "#d93025" : v >= 40 ? "#e8a33d" : "#0f9d58";
+      return `<rect x="${x.toFixed(1)}" y="${(H - pb - bh).toFixed(1)}" width="${w.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${c}"><title>${etiquetas[i]}: ${v}%</title></rect>
+        <text x="${(x + w / 2).toFixed(1)}" y="${H - 9}" text-anchor="middle" font-size="10" fill="#8696a7">${etiquetas[i]}</text>`;
+    }).join("")}</svg>`;
+}
+
+function barrita(pct) {
+  const c = pct >= 99 ? "" : pct >= 97 ? " w" : " b";
+  return `<div style="display:flex;align-items:center;gap:9px"><div class="bar"><i class="${c.trim()}" style="width:${Math.min(100, pct)}%"></i></div><span class="mono">${nf(pct, 2)}%</span></div>`;
+}
+const etiqEstado = e => e === "up" ? '<span class="tag t-ok"><span class="dot"></span>En línea</span>'
+  : e === "deg" ? '<span class="tag t-warn"><span class="dot"></span>Degradado</span>'
+  : '<span class="tag t-bad"><span class="dot"></span>Sin respuesta</span>';
+
+/* ---------- HU-01 monitoreo ---------- */
+function sondear() {
+  S.sondeos++; S.ultimoSondeo = new Date();
+  EQUIPOS.forEach(e => {
+    const st = S.eq[e.n], r = rnd(), prev = st.estado;
+    st.estado = r < .055 ? "down" : r < .145 ? "deg" : "up";
+    st.lat = st.estado === "down" ? 0 : st.estado === "deg" ? int(90, 260) : int(2, 22);
+    if (st.estado !== "down") st.ultima = new Date();
+    if (st.estado === "down" && prev !== "down") {
+      S.alertas.unshift({ eq: e.n, ubic: e.u, ip: e.ip, t: new Date(), vista: false, esc: false });
+      escribirLog("ERROR", e.n, "Sin respuesta a ICMP tras 3 intentos");
+    }
+    if (st.estado === "deg" && prev === "up") escribirLog("WARN", e.n, "Latencia " + st.lat + " ms sobre el umbral de 80 ms");
+  });
+  if (S.alertas.length > 60) S.alertas.length = 60;
+  pintarMonitoreo(); pintarAlertas(); pintarInicio();
+}
+
+function pintarMonitoreo() {
+  const v = Object.values(S.eq);
+  $("#m-total").textContent = EQUIPOS.length;
+  $("#m-up").textContent = v.filter(x => x.estado === "up").length;
+  $("#m-deg").textContent = v.filter(x => x.estado === "deg").length;
+  $("#m-down").textContent = v.filter(x => x.estado === "down").length;
+  $("#m-body").innerHTML = EQUIPOS.map(e => {
+    const s = S.eq[e.n];
+    return `<tr><td><b>${e.n}</b></td><td>${e.t}</td><td>${e.u}</td><td class="mono">${e.ip}</td>
+      <td class="num mono">${s.estado === "down" ? "—" : s.lat + " ms"}</td><td>${etiqEstado(s.estado)}</td>
+      <td class="mono">${hhmmss(s.ultima)}</td></tr>`;
+  }).join("");
+}
+
+/* ---------- HU-02 alertas ---------- */
+function pintarAlertas() {
+  const f = $("#a-filter") ? $("#a-filter").value : "all";
+  const lista = S.alertas.filter(a => f === "all" || (f === "new" ? !a.vista : a.vista));
+  $("#a-new").textContent = S.alertas.filter(a => !a.vista).length;
+  $("#a-tot").textContent = S.alertas.length;
+  $("#a-list").innerHTML = lista.length ? lista.map((a, i) => `
+    <div class="feed">
+      <div class="ic bad">!</div>
+      <div class="tx"><b>${a.eq} dejó de responder</b>
+        <span>${a.ubic} · ${a.ip}${a.esc ? " · escalado a incidente" : ""}</span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${a.vista ? '<span class="tag t-mute">Atendida</span>' : `<button class="btn" data-esc="${i}">Escalar a incidente</button>`}
+        <span class="when">${hhmm(a.t)}</span></div>
+    </div>`).join("") : '<div class="empty">Sin alertas en este filtro. El sistema solo notifica cuando hay algo que notificar.</div>';
+  $$("#a-list [data-esc]").forEach(b => b.onclick = () => {
+    const a = lista[+b.dataset.esc]; a.vista = true; a.esc = true;
+    const eq = EQUIPOS.find(e => e.n === a.eq);
+    S.incidentes.unshift({
+      id: "INC-" + (1060 + S.incidentes.length), eq: a.eq, ubic: a.ubic,
+      desc: "Equipo sin respuesta detectado por monitoreo automático", prio: "Alta",
+      estado: "Abierto", resp: pick(TECNICOS), creado: new Date(), min: 0, slaMin: 240
+    });
+    pintarAlertas(); pintarIncidentes(); pintarInicio();
+  });
+}
+
+/* ---------- HU-04 incidentes ---------- */
+function pintarIncidentes() {
+  const abiertos = S.incidentes.filter(i => i.estado !== "Cerrado");
+  const cerrados = S.incidentes.filter(i => i.estado === "Cerrado");
+  const cumplen = cerrados.filter(i => i.min <= i.slaMin).length;
+  $("#i-open").textContent = abiertos.length;
+  $("#i-open-d").textContent = abiertos.filter(i => i.prio === "Alta").length + " de prioridad alta";
+  $("#i-risk").textContent = abiertos.filter(i => i.slaMin - i.min < 120 && i.slaMin - i.min > 0).length;
+  $("#i-sla").textContent = cerrados.length ? Math.round(cumplen / cerrados.length * 100) + " %" : "—";
+  $("#i-mttr").textContent = cerrados.length ? nf(cerrados.reduce((s, i) => s + i.min, 0) / cerrados.length / 60, 1) + " h" : "—";
+  const f = $("#i-filter").value;
+  $("#i-body").innerHTML = S.incidentes.filter(i => f === "all" || i.estado === f).map(i => {
+    const resta = i.slaMin - i.min;
+    const sla = i.estado === "Cerrado"
+      ? (i.min <= i.slaMin ? '<span class="tag t-ok">Cumplido</span>' : '<span class="tag t-bad">Incumplido</span>')
+      : resta <= 0 ? '<span class="tag t-bad">Vencido</span>'
+      : resta < 120 ? `<span class="tag t-warn">Quedan ${dur(resta)}</span>`
+      : `<span class="tag t-mute">Quedan ${dur(resta)}</span>`;
+    const est = i.estado === "Cerrado" ? "t-ok" : i.estado === "En proceso" ? "t-info" : "t-bad";
+    const pr = i.prio === "Alta" ? "t-bad" : i.prio === "Media" ? "t-warn" : "t-mute";
+    return `<tr><td class="mono"><b>${i.id}</b></td><td>${i.eq}</td>
+      <td>${i.desc}<br><span class="mono" style="font-size:11px">${i.resp}</span></td>
+      <td><span class="tag ${pr}">${i.prio}</span></td>
+      <td class="mono">${fecha(i.creado)} ${hhmm(i.creado)}</td>
+      <td class="num mono">${dur(i.min)}</td><td>${sla}</td>
+      <td><span class="tag ${est}">${i.estado}</span></td></tr>`;
+  }).join("");
+}
+
+/* ---------- HU-03 reportes ---------- */
+function generarReporte() {
+  const dias = +$("#r-period").value;
+  const n = dias === 1 ? 24 : dias;
+  const serie = Array.from({ length: n }, () => 97.4 + rnd() * 2.5);
+  const etiq = dias === 1 ? Array.from({ length: 24 }, (_, i) => pad(i) + "h")
+    : Array.from({ length: n }, (_, i) => { const d = new Date(Date.now() - (n - 1 - i) * 86400000); return pad(d.getDate()) + "/" + pad(d.getMonth() + 1); });
+  $("#c-rep").innerHTML = svgLinea(serie, { umbral: 99, etiquetas: etiq, alto: 210 });
+  const prom = serie.reduce((a, b) => a + b, 0) / serie.length;
+  const incs = S.incidentes.filter(i => (Date.now() - i.creado) / 86400000 <= dias);
+  const filas = EQUIPOS.map(e => {
+    const disp = 96.5 + rnd() * 3.4, ic = S.eq[e.n].inc, at = int(35, 310);
+    return { e, disp, ic, at };
+  }).sort((a, b) => a.disp - b.disp);
+  $("#r-av").textContent = nf(prom, 2) + " %";
+  $("#r-av-d").innerHTML = prom >= 99 ? "<b>sobre</b> el objetivo" : '<b class="dn">bajo</b> el objetivo de 99 %';
+  $("#r-in").textContent = incs.length;
+  $("#r-mt").textContent = incs.length ? nf(incs.reduce((s, i) => s + i.min, 0) / incs.length / 60, 1) + " h" : "—";
+  $("#r-worst").textContent = filas[0].e.n;
+  $("#r-worst-d").textContent = nf(filas[0].disp, 2) + " % · " + filas[0].ic + " incidentes";
+  $("#r-when").textContent = "Generado el " + fecha(new Date()) + " a las " + hhmm(new Date());
+  $("#r-body").innerHTML = filas.map(f => `<tr><td><b>${f.e.n}</b></td><td>${f.e.u}</td>
+    <td class="num">${barrita(f.disp)}</td><td class="num mono">${f.ic}</td>
+    <td class="num mono">${dur(f.at)}</td>
+    <td>${f.disp >= 99 ? '<span class="tag t-ok">Estable</span>' : f.disp >= 98 ? '<span class="tag t-warn">Vigilar</span>' : '<span class="tag t-bad">Intervenir</span>'}</td></tr>`).join("");
+  window._rep = filas;
+}
+
+/* ---------- HU-05 inventario ---------- */
+function calidad(e) {
+  const obs = [];
+  if (!e.ser) obs.push("sin número de serie");
+  if (!e.fw) obs.push("firmware no reportado");
+  if (EQUIPOS.filter(x => x.ser && x.ser === e.ser).length > 1) obs.push("serie duplicada");
+  const g = new Date(e.gar + "-01");
+  if (g < new Date()) obs.push("garantía vencida");
+  return obs;
+}
+function pintarInventario() {
+  const datos = EQUIPOS.map(e => ({ e, obs: calidad(e) }));
+  const malos = datos.filter(d => d.obs.length);
+  const seis = new Date(); seis.setMonth(seis.getMonth() + 6);
+  $("#v-tot").textContent = EQUIPOS.length;
+  $("#v-q").textContent = Math.round((EQUIPOS.length - malos.length) / EQUIPOS.length * 100) + " %";
+  $("#v-bad").textContent = malos.length;
+  $("#v-war").textContent = EQUIPOS.filter(e => { const g = new Date(e.gar + "-01"); return g >= new Date() && g <= seis; }).length;
+  const f = $("#v-filter").value;
+  $("#v-body").innerHTML = (f === "bad" ? malos : datos).map(({ e, obs }) => `
+    <tr><td><b>${e.n}</b><br><span class="mono" style="font-size:11px">${e.ip}</span></td>
+    <td>${e.mod}</td><td class="mono">${e.ser || '<span style="color:var(--bad)">—</span>'}</td>
+    <td>${e.u}</td><td class="mono">${e.fw || '<span style="color:var(--bad)">—</span>'}</td>
+    <td class="mono">${e.gar}</td>
+    <td>${obs.length ? `<span class="tag t-warn">${obs.join(" · ")}</span>` : '<span class="tag t-ok"><span class="dot"></span>Completo</span>'}</td></tr>`).join("");
+}
+
+/* ---------- HU-06 logs ---------- */
+const FUENTES = ["syslog-core", "wlc-controller", "netflow", "snmp-trap"];
+function escribirLog(sev, eq, msg) {
+  S.logs.unshift({ t: new Date(), sev, fuente: pick(FUENTES), eq, msg });
+  if (S.logs.length > 400) S.logs.length = 400;
+}
+(function () {
+  const base = ["Interfaz GigabitEthernet1/0/12 cambió de estado a up", "Cliente asociado al SSID EAFIT-WIFI",
+    "Reintento de autenticación 802.1X", "Tabla ARP actualizada", "Umbral de CPU al 78 %",
+    "Pérdida de paquetes del 3,2 % en el enlace", "Sesión SSH iniciada desde 10.0.0.45",
+    "Reinicio programado completado", "Canal cambiado a 36 por interferencia"];
+  for (let i = 0; i < 120; i++) {
+    const r = rnd();
+    S.logs.push({
+      t: new Date(Date.now() - i * int(40, 400) * 1000),
+      sev: r < .12 ? "ERROR" : r < .33 ? "WARN" : "INFO",
+      fuente: pick(FUENTES), eq: pick(EQUIPOS).n, msg: pick(base)
+    });
+  }
+  S.logs.sort((a, b) => b.t - a.t);
+})();
+
+function patrones() {
+  const m = {};
+  S.logs.forEach(l => { const k = l.eq + "|" + l.msg; (m[k] = m[k] || []).push(l); });
+  return Object.entries(m).filter(([, v]) => v.length >= 4)
+    .map(([k, v]) => ({ eq: k.split("|")[0], msg: k.split("|")[1], n: v.length, sev: v[0].sev, ultimo: v[0].t }))
+    .sort((a, b) => b.n - a.n).slice(0, 5);
+}
+function pintarLogs() {
+  const ps = patrones();
+  const err = S.logs.filter(l => l.sev === "ERROR").length;
+  $("#l-tot").textContent = S.logs.length;
+  $("#l-err").textContent = err;
+  $("#l-pat").textContent = ps.length;
+  $("#l-noise").textContent = Math.round(ps.reduce((s, p) => s + p.n - 1, 0) / S.logs.length * 100) + " %";
+  $("#l-pats").innerHTML = ps.length ? ps.map(p => `
+    <div class="feed"><div class="ic ${p.sev === "ERROR" ? "bad" : p.sev === "WARN" ? "warn" : "info"}">${p.n}</div>
+    <div class="tx"><b>${p.msg}</b><span>${p.eq} · ${p.n} ocurrencias agrupadas en un solo patrón</span></div>
+    <span class="when">últ. ${hhmm(p.ultimo)}</span></div>`).join("")
+    : '<div class="empty">Sin patrones repetidos en la ventana analizada.</div>';
+  const f = $("#l-sev").value;
+  const ok = l => f === "all" || (f === "ERROR" ? l.sev === "ERROR" : l.sev !== "INFO");
+  $("#l-body").innerHTML = S.logs.filter(ok).slice(0, 110).map(l => {
+    const c = l.sev === "ERROR" ? "er" : l.sev === "WARN" ? "wa" : "in";
+    return `<div><span class="ts">${fecha(l.t)} ${hhmmss(l.t)}</span> <span class="${c}">[${l.sev}]</span> <span class="ts">${l.fuente}</span> ${l.eq} — ${l.msg}</div>`;
+  }).join("");
+}
+
+/* ---------- HU-07 ocupación ---------- */
+function pintarOcupacion() {
+  const act = S.aulas.filter(a => !a.off);
+  const media = act.reduce((s, a) => s + a.ocup / a.cap, 0) / act.length * 100;
+  $("#o-tot").textContent = S.aulas.length;
+  $("#o-avg").textContent = Math.round(media) + " %";
+  $("#o-low").textContent = act.filter(a => a.ocup / a.cap < .35).length;
+  $("#o-off").textContent = S.aulas.filter(a => a.off).length;
+  $("#o-rooms").innerHTML = S.aulas.map(a => {
+    const p = Math.round(a.ocup / a.cap * 100);
+    if (a.off) return `<div class="room"><div class="top2"><b>${a.n}</b><span class="tag t-bad"><span class="dot"></span>Sensor caído</span></div>
+      <div class="pc" style="color:var(--ink-3)">sin dato</div><div class="cap">último reporte ${hhmm(a.ultima)} · hace 42 min</div></div>`;
+    const t = p >= 70 ? "t-bad" : p >= 35 ? "t-ok" : "t-warn";
+    const lbl = p >= 70 ? "Alta" : p >= 35 ? "Normal" : "Subutilizada";
+    return `<div class="room"><div class="top2"><b>${a.n}</b><span class="tag ${t}">${lbl}</span></div>
+      <div class="pc">${p}<span style="font-size:13px;color:var(--ink-3)"> %</span></div>
+      <div class="cap">${a.ocup} de ${a.cap} puestos · ${hhmm(a.ultima)}</div>
+      <div class="bar" style="margin-top:9px"><i class="${p >= 70 ? "b" : p >= 35 ? "" : "w"}" style="width:${p}%"></i></div></div>`;
+  }).join("");
+  const franjas = ["6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22"];
+  $("#c-ocu").innerHTML = svgColumnas([18, 72, 81, 44, 68, 76, 52, 21], franjas);
+}
+
+/* ---------- resumen ---------- */
+function pintarInicio() {
+  const v = Object.values(S.eq);
+  const up = v.filter(x => x.estado === "up").length;
+  $("#k-dev").textContent = EQUIPOS.length;
+  $("#k-dev-d").textContent = up + " en línea · " + (EQUIPOS.length - up) + " con novedad";
+  const ab = S.incidentes.filter(i => i.estado !== "Cerrado");
+  $("#k-inc").textContent = ab.length;
+  $("#k-inc-d").textContent = ab.filter(i => i.prio === "Alta").length + " de prioridad alta";
+  const serie24 = Array.from({ length: 24 }, (_, i) => 98.5 + Math.sin(i / 3.1) * .5 + rnd() * .65);
+  $("#c-avail").innerHTML = svgLinea(serie24, { umbral: 99, etiquetas: Array.from({ length: 24 }, (_, i) => pad(i) + "h") });
+  $("#k-avail").textContent = nf(serie24.reduce((a, b) => a + b, 0) / 24, 2) + " %";
+  $("#c-proc").innerHTML = svgBarras(PROCESOS.map(p => ({
+    l: p.c + " · " + p.n, v: p.h, c: p.hu.startsWith("fase") ? "#b9c6d3" : "#145a85"
+  })), { alto: 268 });
+  const eventos = [];
+  S.alertas.slice(0, 2).forEach(a => eventos.push({ ic: "bad", s: "!", t: a.eq + " sin respuesta", d: a.ubic, w: hhmm(a.t) }));
+  S.incidentes.slice(0, 2).forEach(i => eventos.push({ ic: i.estado === "Cerrado" ? "ok" : "info", s: i.estado === "Cerrado" ? "✓" : "◍", t: i.id + " · " + i.desc, d: i.eq + " · " + i.resp, w: hhmm(i.creado) }));
+  patrones().slice(0, 1).forEach(p => eventos.push({ ic: "warn", s: p.n, t: "Patrón detectado en logs", d: p.msg, w: hhmm(p.ultimo) }));
+  S.aulas.filter(a => a.off).slice(0, 1).forEach(a => eventos.push({ ic: "warn", s: "⚠", t: "Sensor sin reportar", d: "Aula " + a.n, w: hhmm(a.ultima) }));
+  $("#feed-home").innerHTML = eventos.slice(0, 6).map(e => `
+    <div class="feed"><div class="ic ${e.ic}">${e.s}</div>
+    <div class="tx"><b>${e.t}</b><span>${e.d}</span></div><span class="when">${e.w}</span></div>`).join("");
+}
+
+/* ---------- navegación ---------- */
+const TITULOS = {
+  inicio: ["Resumen operativo", "Infraestructura TI – Redes"],
+  mon: ["Monitoreo de disponibilidad", "HU-01 · sondeo automático de switches y puntos de acceso"],
+  ale: ["Alertas automáticas", "HU-02 · notificación ante no-respuesta"],
+  inc: ["Gestión de incidentes", "HU-04 · trazabilidad y control de SLA"],
+  rep: ["Reportes de desempeño", "HU-03 · generación programada y exportable"],
+  inv: ["Inventario de equipos", "HU-05 · con control de calidad del dato"],
+  log: ["Consolidación de logs", "HU-06 · cuatro fuentes en un solo flujo"],
+  ocu: ["Ocupación de aulas", "HU-07 · sensores ESP32"]
+};
+function ir(v) {
+  $$(".view").forEach(s => s.classList.toggle("on", s.id === v));
+  $$("#nav a,#nav2 a").forEach(a => a.classList.toggle("on", a.dataset.v === v));
+  $("#t-title").textContent = TITULOS[v][0];
+  $("#t-crumb").textContent = TITULOS[v][1];
+  if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (v === "rep") generarReporte();
+  if (v === "inv") pintarInventario();
+  if (v === "log") pintarLogs();
+  if (v === "ocu") pintarOcupacion();
+  if (v === "inc") pintarIncidentes();
+}
+$$("#nav a,#nav2 a").forEach(a => a.onclick = () => ir(a.dataset.v));
+
+/* ---------- arranque ---------- */
+function reloj() { $("#t-clock").textContent = hhmmss(new Date()); }
+setInterval(reloj, 1000); reloj();
+
+$("#m-now").onclick = sondear;
+$("#m-int").onchange = e => {
+  clearInterval(S.timer);
+  S.timer = setInterval(sondear, +e.target.value * 1000);
+};
+S.timer = setInterval(sondear, 300000);
+
+$("#a-filter").onchange = pintarAlertas;
+$("#a-ack").onclick = () => { S.alertas.forEach(a => a.vista = true); pintarAlertas(); };
+$("#i-filter").onchange = pintarIncidentes;
+$("#i-csv").onclick = () => descargarCSV("incidentes_noc_eafit.csv",
+  [["Ticket", "Equipo", "Ubicacion", "Descripcion", "Prioridad", "Responsable", "Registrado", "Minutos", "SLA_min", "Estado"]]
+    .concat(S.incidentes.map(i => [i.id, i.eq, i.ubic, i.desc, i.prio, i.resp, fecha(i.creado) + " " + hhmm(i.creado), i.min, i.slaMin, i.estado])));
+$("#r-gen").onclick = generarReporte;
+$("#r-period").onchange = generarReporte;
+$("#r-print").onclick = () => window.print();
+$("#r-csv").onclick = () => descargarCSV("reporte_desempeno_red.csv",
+  [["Equipo", "Ubicacion", "Disponibilidad_%", "Incidentes", "Tiempo_atencion_min"]]
+    .concat((window._rep || []).map(f => [f.e.n, f.e.u, nf(f.disp, 2), f.ic, f.at])));
+$("#v-filter").onchange = pintarInventario;
+$("#v-csv").onclick = () => descargarCSV("inventario_red_eafit.csv",
+  [["Equipo", "Modelo", "Serie", "Ubicacion", "IP", "Firmware", "Garantia", "Observaciones"]]
+    .concat(EQUIPOS.map(e => [e.n, e.mod, e.ser, e.u, e.ip, e.fw, e.gar, calidad(e).join(" / ") || "completo"])));
+$("#l-sev").onchange = pintarLogs;
+$("#l-pause").onclick = e => {
+  S.logPausado = !S.logPausado;
+  e.target.textContent = S.logPausado ? "Reanudar" : "Pausar";
+};
+S.logTimer = setInterval(() => {
+  if (S.logPausado) return;
+  const r = rnd();
+  escribirLog(r < .1 ? "ERROR" : r < .3 ? "WARN" : "INFO", pick(EQUIPOS).n,
+    pick(["Interfaz cambió de estado a up", "Cliente asociado al SSID EAFIT-WIFI", "Umbral de CPU al 81 %",
+      "Reintento de autenticación 802.1X", "Canal cambiado por interferencia", "Sesión SSH iniciada"]));
+  if ($("#log").classList.contains("on")) pintarLogs();
+}, 6000);
+
+setInterval(() => {
+  S.aulas.forEach(a => { if (!a.off) { a.ocup = Math.max(0, Math.min(a.cap, a.ocup + int(-3, 3))); a.ultima = new Date(); } });
+  if ($("#ocu").classList.contains("on")) pintarOcupacion();
+}, 12000);
+
+pintarMonitoreo(); pintarAlertas(); pintarIncidentes(); pintarInicio();
+if (location.hash && TITULOS[location.hash.slice(1)]) ir(location.hash.slice(1));
 </script>
 </body>
 </html>
